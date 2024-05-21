@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Losowe zadanie</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Losowe zadanie:</h1>
+    <div class="result-container">
+        <p>Wykonaj {{ operation_str }} na liczbach {{ num1 }} i {{ num2 }}.</p>
+        <form action="/check" method="post">
+            <input type="hidden" name="num1" value="{{ num1 }}">
+            <input type="hidden" name="num2" value="{{ num2 }}">
+            <input type="hidden" name="operation" value="{{ operation }}">
+            <label for="answer">Twoja odpowiedź:</label>
+            <input type="number" step="any" id="answer" name="answer" required>
+            <br><br>
+            <input type="submit" value="Sprawdź">
+        </form>
+    </div>
+    <br>
+    <a href="/">Wróć do strony głównej</a>
+</body>
+</html>

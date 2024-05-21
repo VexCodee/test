@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Sprawdzenie odpowiedzi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Sprawdzenie odpowiedzi:</h1>
+    <div class="result-container">
+        <p>Twoja odpowiedź na {{ operation }} {{ num1 }} i {{ num2 }} to: {{ user_answer }}</p>
+        <p>Poprawna odpowiedź to: {{ correct_answer }}</p>
+        {% if is_correct %}
+        <p><strong>Gratulacje! Twoja odpowiedź jest poprawna.</strong></p>
+        {% else %}
+        <p><strong class="incorrect">Twoja odpowiedź jest błędna. Spróbuj ponownie!</strong></p>
+        {% endif %}
+    </div>
+    <br>
+    <a href="/random">Spróbuj inne losowe zadanie</a>
+    <br>
+    <a href="/">Wróć do strony głównej</a>
+</body>
+</html>

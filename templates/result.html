@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Wynik</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Wynik:</h1>
+    <div class="result-container">
+        <p>Wynik operacji {{ operation }} na liczbach {{ num1 }} i {{ num2 }} to: {{ result }}</p>
+    </div>
+    <br>
+    <a href="/">Wróć do strony głównej</a>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Nauka Arytmetyki</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Witaj w aplikacji do nauki arytmetyki!</h1>
+    <form action="/result" method="post">
+        <label for="num1">Liczba 1:</label>
+        <input type="number" id="num1" name="num1" required>
+        <br>
+        <label for="num2">Liczba 2:</label>
+        <input type="number" id="num2" name="num2" required>
+        <br>
+        <label for="operation">Operacja:</label>
+        <select id="operation" name="operation">
+            <option value="add">Dodawanie</option>
+            <option value="subtract">Odejmowanie</option>
+            <option value="multiply">Mnożenie</option>
+            <option value="divide">Dzielenie</option>
+        </select>
+        <br><br>
+        <input type="submit" value="Oblicz">
+    </form>
+    <br>
+    <a href="/random">Losowe zadanie</a>
+</body>
+
+</html>
