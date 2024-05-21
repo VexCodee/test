@@ -70,27 +70,21 @@ def check():
     user_answer = int(request.form['answer'])
 
     if operation == 'dodawanie':
-        num1 = random.randint(0, 100)
-        num2 = random.randint(0, 100 - num1)
         correct_answer = num1 + num2
 
     elif operation == 'odejmowanie':
-        num1 = random.randint(0, 100)
-        num2 = random.randint(0, num1)
         correct_answer = num1 - num2
 
     elif operation == 'mnozenie':
-        num1 = random.randint(0, 10)
-        num2 = random.randint(0, 10)
-        correct_answer = num1 * num2 if num1 * num2 <= 100 else None
+        correct_answer = num1 * num2
 
     elif operation == 'dzielenie':
-        num1 = random.randint(1, 100)
-        divisors = [i for i in range(1, num1 + 1) if num1 % i == 0]
-        num2 = random.choice(divisors)
-        correct_answer = num1 // num2
+        if num2 != 0 and num1 % num2 == 0:
+            correct_answer = num1 // num2
+        else:
+            correct_answer = None
 
-    is_correct = user_answer == correct_answer
+    is_correct = user_answer == correct_answer if correct_answer is not None else False
 
     return render_template('check.html', num1=num1, num2=num2, operation=operation, user_answer=user_answer,
                            correct_answer=correct_answer, is_correct=is_correct)
