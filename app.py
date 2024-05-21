@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import random
 
 app = Flask(__name__)
-
+app.secret_key = 'your_secret_key'  # Ustaw własny klucz tajny
 
 @app.route('/')
 def index():
+    session['strike'] = 0  # Zresetuj strike przy każdym wejściu na stronę główną
     return render_template('index.html')
 
 
@@ -59,7 +60,7 @@ def random_operation():
         num2 = random.choice(divisors)
         operation_str = 'dzielenie'
 
-    return render_template('random.html', num1=num1, num2=num2, operation=operation, operation_str=operation_str)
+    return render_template('random.html', num1=num1, num2=num2, operation=operation, operation_str=operation_str, strike=session.get('strike', 0))
 
 
 @app.route('/check', methods=['POST'])
@@ -86,8 +87,13 @@ def check():
 
     is_correct = user_answer == correct_answer if correct_answer is not None else False
 
+    if is_correct:
+        session['strike'] += 1
+    else:
+        session['strike'] = 0
+
     return render_template('check.html', num1=num1, num2=num2, operation=operation, user_answer=user_answer,
-                           correct_answer=correct_answer, is_correct=is_correct)
+                           correct_answer=correct_answer, is_correct=is_correct, strike=session['strike'])
 
 
 if __name__ == '__main__':
