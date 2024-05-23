@@ -1,17 +1,55 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for, flash
 import random
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Ustaw własny klucz tajny
 
+
+def get_db_connection():
+    conn = sqlite3.connect('users.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
 @app.route('/')
 def index():
-    session['strike'] = 0  # Zresetuj strike przy każdym wejściu na stronę główną
-    return render_template('index.html')
+    if 'username' in session:
+        return render_template('index.html')
+    return redirect(url_for('login'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+        conn.close()
+
+        if user and check_password_hash(user['password'], password):
+            session['username'] = username
+            session['strike'] = 0
+            return redirect(url_for('index'))
+        else:
+            flash('Nieprawidłowy login lub hasło')
+
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 
 @app.route('/result', methods=['POST'])
 def result():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     num1 = int(request.form['num1'])
     num2 = int(request.form['num2'])
     operation = request.form['operation']
@@ -35,11 +73,15 @@ def result():
         operation_str = 'Nieznana operacja'
         result = None
 
-    return render_template('result.html', num1=num1, num2=num2, operation=operation, operation_str=operation_str, result=result)
+    return render_template('result.html', num1=num1, num2=num2, operation=operation, operation_str=operation_str,
+                           result=result)
 
 
 @app.route('/random')
 def random_operation():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     operation = random.choice(['dodawanie', 'odejmowanie', 'mnozenie', 'dzielenie'])
 
     if operation == 'dodawanie':
@@ -60,11 +102,15 @@ def random_operation():
         num2 = random.choice(divisors)
         operation_str = 'dzielenie'
 
-    return render_template('random.html', num1=num1, num2=num2, operation=operation, operation_str=operation_str, strike=session.get('strike', 0))
+    return render_template('random.html', num1=num1, num2=num2, operation=operation, operation_str=operation_str,
+                           strike=session.get('strike', 0))
 
 
 @app.route('/check', methods=['POST'])
 def check():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     num1 = int(request.form['num1'])
     num2 = int(request.form['num2'])
     operation = request.form['operation']
@@ -72,13 +118,10 @@ def check():
 
     if operation == 'dodawanie':
         correct_answer = num1 + num2
-
     elif operation == 'odejmowanie':
         correct_answer = num1 - num2
-
     elif operation == 'mnozenie':
         correct_answer = num1 * num2
-
     elif operation == 'dzielenie':
         if num2 != 0 and num1 % num2 == 0:
             correct_answer = num1 // num2
